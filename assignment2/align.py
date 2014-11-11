@@ -110,6 +110,7 @@ def model12_compute(bitext):
 							q[m2key]=initial_prob
 					#{compute normalization -- total_s(j) is the normalizing constant or partition function: #total_s[j]=sum(i=0..length(e)) t(f_j|e_i)*q(j,i,lf,le)}
 					#total_s[j]+= *** YOUR CODE HERE ***
+					total_s[j] += t[m1key] * q[m2key]
 			#{collect counts }
 			for j,f_j in enumerate(f):
 				for i,e_i in enumerate(e):
@@ -117,24 +118,30 @@ def model12_compute(bitext):
 					m2key=(j,i,lf,le)
 					#Model1
 					# value= *** YOUR CODE HERE ***
+					value = (t[m1key] * q[m2key]) / total_s[j]
 
 					#Model1: count_t and total_t
 					count_t[m1key] += value
 					total_t[e_i] += value
 					#Model2: count_q and total_q
 					# *** YOUR CODE HERE ***
+					count_q[m2key] += value
+					m3key=(i,lf,le)
+					total_q[m3key] += value
 		#Maximize
 		#{estimate probabilities }
 		t_old=t.copy()
 		margin_err_t=0
 		for f,e in t.keys():
 			# t[(f,e)]= *** YOUR CODE HERE ***
+			t[(f,e)] = count_t[(f,e)] / total_t[e]
 			margin_err_t+=numpy.power(t[(f,e)]-t_old[(f,e)],2)
 		
 		q_old=q.copy()
 		margin_err_q=0
 		for j,i,lf,le in q.keys():
 			# q[(j,i,lf,le)]= *** YOUR CODE HERE *** 
+			q[(j,i,lf,le)] = count_q[(j,i,lf,le)] / total_q[(i,lf,le)]
 			margin_err_q+=numpy.power(q[(j,i,lf,le)]-q_old[(j,i,lf,le)],2)    
 		
 		iteration+=1
@@ -161,6 +168,10 @@ def model12_align(bitext,model12,threshold):
 			#*** YOUR CODE HERE ***
 			# for (i, e_i) in enumerate(e):
 			# 		probs[i]=model1...
+			for (i, e_i) in enumerate(e):
+				m1key=(f_j, e_i)
+				m2key=(j, i, lf, le)
+				probs[i] = model1[m1key] * model2[m2key]
 			if (max(probs)>threshold):
 				align_i.append((j,numpy.argmax(probs)))
 		alignments.append(align_i)
@@ -260,6 +271,9 @@ if __name__=="__main__":
 
 	#E-F: bitext_aligned_ef
 	#	*** YOUR CODE HERE ***
+	model12_ef = model12_compute(bitext_ef)
+	alignments = model12_align(bitext_ef, model12_ef, opts.threshold)
+	bitext_aligned_ef = alignments
 
 	#Perform growing heuristic diagonal with final and
 	#bitext_aligned_fe=alignments
