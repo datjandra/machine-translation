@@ -265,9 +265,9 @@ if __name__=="__main__":
 	
 	#Model 1 and 2 Align
 	#F-E: bitext_aligned_fe
-	#model12_fe=model12_compute(bitext_fe)
-	#alignments=model12_align(bitext_fe,model12_fe,opts.threshold)
-	#bitext_aligned_fe=alignments
+	model12_fe=model12_compute(bitext_fe)
+	alignments=model12_align(bitext_fe,model12_fe,opts.threshold)
+	bitext_aligned_fe=alignments
 
 	#E-F: bitext_aligned_ef
 	#	*** YOUR CODE HERE ***
@@ -277,8 +277,8 @@ if __name__=="__main__":
 
 	#Perform growing heuristic diagonal with final and
 	#bitext_aligned_fe=alignments
-	#heuristic="FINAL" #it can be either None, "FINAL" or "FINAL-AND"
-	#alignments=GROW_DIAG_FINAL_AND(bitext_fe,bitext_aligned_fe,bitext_aligned_ef,heuristic)
+	heuristic="FINAL" #it can be either None, "FINAL" or "FINAL-AND"
+	alignments=GROW_DIAG_FINAL_AND(bitext_fe,bitext_aligned_fe,bitext_aligned_ef,heuristic)
 
 	printAlignments(alignments)
    
