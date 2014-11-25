@@ -13,6 +13,9 @@ echo.
 echo Obtaining Good Turing parameters and 1-gram, 2-gram and 3-gram Count of Counts
 %SRILMPATH%\ngram-count -text bible.train.tok.low  -order 3 -gt1 bible.train.gt.1 -gt2 bible.train.gt.2 -gt3 bible.train.gt.3 -unk -debug 2 2> bible.train.CC
 
+echo Obtaining Good Turing language model
+%SRILMPATH%\ngram-count -unk -text bible.train.tok.low -order 3 -gt1 bible.train.gt.1 -gt2 bible.train.gt.2 -gt3 bible.train.gt.3 -lm bible.train.gt.lm
+
 echo.
 echo Obtaining Kneser-Ney parameters
 %SRILMPATH%\ngram-count -text bible.train.tok.low -order 3 -kn1 bible.train.kn.1 -kn2 bible.train.kn.2 -kn3 bible.train.kn.3 -unk -debug 2 2> bible.train.KN
@@ -33,65 +36,83 @@ echo.
 echo Measuring perplexities according to John...
 echo.
 echo Good-Turing...
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm bible.train.gt.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo Witten-Bell...
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm bible.train.wb.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo Unmodified Kneser-Ney...
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm bible.train.ukn.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo Modified Kneser-Ney...
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm bible.train.kn.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo Interpolated and Modified Kneser-Ney...
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram-count -unk -text bible.train.tok.low -order 3 -lm bible.train.ikn.lm -kndiscount -interpolate
+%SRILMPATH%\ngram -unk -lm bible.train.ikn.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
 
 echo.
 echo Building Gospel-specific Language Models...
-REM TO BE PROGRAMMED
-
+%SRILMPATH%\ngram-count -unk -text matthew.tok.low -order 3 -lm matthew.ukn.lm -ukndiscount
+%SRILMPATH%\ngram-count -unk -text mark.tok.low -order 3 -lm mark.ukn.lm -ukndiscount
+%SRILMPATH%\ngram-count -unk -text luke.tok.low -order 3 -lm luke.ukn.lm -ukndiscount
+%SRILMPATH%\ngram-count -unk -text john.tok.low -order 3 -lm john.ukn.lm -ukndiscount
 
 echo.
 echo Measuring similarities between LM and texts...
 echo.
 echo matthew-mark
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm matthew.ukn.lm -ppl mark.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo matthew-john
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm matthew.ukn.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo matthew-luke
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm matthew.ukn.lm -ppl luke.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo.
 echo mark-matthew
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm mark.ukn.lm -ppl matthew.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo mark-john
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm mark.ukn.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo mark-luke
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm mark.ukn.lm -ppl luke.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo.
 echo john-matthew
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm john.ukn.lm -ppl matthew.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo john-mark
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm john.ukn.lm -ppl mark.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo john-luke
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm john.ukn.lm -ppl luke.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo.
 echo luke-matthew
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm luke.ukn.lm -ppl matthew.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo luke-mark
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm luke.ukn.lm -ppl mark.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+
 echo.
 echo luke-john
-REM TO BE PROGRAMMED | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
+%SRILMPATH%\ngram -unk -lm luke.ukn.lm -ppl john.tok.low | findstr ppl | cscript //Nologo %SRILMPATH%\sed.vbs "s/^.*ppl1= //g"
 
 pause
