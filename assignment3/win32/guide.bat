@@ -15,11 +15,17 @@ echo Obtaining Good Turing parameters and 1-gram, 2-gram and 3-gram Count of Cou
 
 echo.
 echo Obtaining Kneser-Ney parameters
-REM TO BE PROGRAMMED
+%SRILMPATH%\ngram-count -text bible.train.tok.low  -order 3 -kn1 bible.train.kn.1 -kn2 bible.train.kn.2 -kn3 bible.train.kn.3 -unk -debug 2 2> bible.train.KN
 
 echo.
 echo Building LM according to other different discounting interpolation schemes
-REM TO BE PROGRAMMED
+
+echo Obtaining Witten-Bell discounting parameters
+%SRILMPATH%\ngram-count -text bible.train.tok.low -order 3 -wbdiscount1 bible.train.wb.1 -wbdiscount2 bible.train.wb.2 -wbdiscount3 bible.train.wb.3 -unk -debug 2 2> bible.train.WB
+
+echo Obtaining original (unmodified) Kneser-Ney parameters
+%SRILMPATH%\ngram-count -text bible.train.tok.low -order 3 -ukndiscount1 bible.train.ukn.1 -ukndiscount2 bible.train.ukn.2 -ukndiscount3 bible.train.ukn.3 -unk -debug 2 2> bible.train.UKN
+
 	
 echo.
 echo Measuring perplexities according to John...
